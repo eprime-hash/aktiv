@@ -843,6 +843,19 @@ select:focus {
   font-weight: 700;
 }
 
+.habit-streak {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: rgba(230, 138, 115, 0.16);
+  color: #f0a78f;
+  font-size: 0.74rem;
+  font-weight: 800;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
 .habit-due-badge {
   margin-left: 8px;
   padding: 2px 8px;
