@@ -306,6 +306,94 @@ h2 {
   line-height: 1.4;
 }
 
+/* Хроника становления */
+.chronicle-card {
+  border-color: rgba(176, 138, 214, 0.32);
+  background: linear-gradient(180deg, rgba(176, 138, 214, 0.07), rgba(176, 138, 214, 0.02));
+}
+
+.chronicle-intro {
+  margin: 4px 0 16px;
+  color: var(--soft);
+  line-height: 1.55;
+}
+
+.chronicle-list {
+  display: grid;
+  gap: 12px;
+  position: relative;
+  padding-left: 18px;
+}
+
+.chronicle-list::before {
+  content: "";
+  position: absolute;
+  left: 5px;
+  top: 6px;
+  bottom: 6px;
+  width: 2px;
+  background: linear-gradient(180deg, rgba(176, 138, 214, 0.6), rgba(176, 138, 214, 0.08));
+  border-radius: 2px;
+}
+
+.chronicle-chapter {
+  position: relative;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: rgba(14, 14, 15, 0.45);
+  padding: 14px 16px;
+}
+
+.chronicle-chapter::before {
+  content: "";
+  position: absolute;
+  left: -16px;
+  top: 18px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #b08ad6;
+  box-shadow: 0 0 8px rgba(176, 138, 214, 0.6);
+}
+
+.chronicle-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 0.76rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.chronicle-chapter h3 {
+  margin: 6px 0 8px;
+  font-size: 1.12rem;
+  color: var(--text);
+}
+
+.chronicle-chapter p {
+  margin: 0 0 12px;
+  color: var(--soft);
+  line-height: 1.6;
+}
+
+.chronicle-share {
+  border: 1px solid var(--line-strong);
+  border-radius: 7px;
+  background: transparent;
+  color: var(--soft);
+  padding: 6px 12px;
+  font: inherit;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+.chronicle-share:hover {
+  border-color: rgba(176, 138, 214, 0.5);
+  color: var(--text);
+}
+
 /* Дивиденды дисциплины */
 .dividend-card {
   border-color: rgba(217, 182, 111, 0.32);
