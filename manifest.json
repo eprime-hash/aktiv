@@ -1,0 +1,29 @@
+{
+  "name": "Актив Я: Терминал потенциала",
+  "short_name": "Актив Я",
+  "description": "Премиальный трекер самоинвестирования для привычек, личного потенциала и материализации реальных активов.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0e0e0f",
+  "theme_color": "#0e0e0f",
+  "icons": [
+    {
+      "src": "assets/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

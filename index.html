@@ -1,0 +1,663 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0e0e0f" />
+    <title>Актив Я | Терминал потенциала</title>
+    <link rel="manifest" href="manifest.json" />
+    <link rel="icon" href="assets/icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="assets/icon-180.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta name="apple-mobile-web-app-title" content="Актив Я" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Терминал личной капитализации</p>
+          <h1>Актив Я</h1>
+        </div>
+        <div class="topbar-actions">
+          <button class="ritual-button" id="ritualButton" type="button">
+            <span aria-hidden="true">✓</span> Ритуал дня
+          </button>
+          <time id="todayLabel" datetime=""></time>
+          <span class="app-version" id="appVersion" title="Версия приложения"></span>
+          <button class="icon-button" id="installButton" type="button" hidden aria-label="Установить приложение">
+            <span aria-hidden="true">↓</span>
+          </button>
+        </div>
+      </header>
+
+      <nav class="view-tabs" aria-label="Разделы продукта">
+        <button class="active" type="button" data-view-tab="overview"><span class="tab-icon" aria-hidden="true">🏠</span><span class="tab-label">Обзор</span></button>
+        <button type="button" data-view-tab="habits"><span class="tab-icon" aria-hidden="true">✅</span><span class="tab-label">Привычки</span></button>
+        <button type="button" data-view-tab="growth"><span class="tab-icon" aria-hidden="true">📈</span><span class="tab-label">Рост</span></button>
+        <button type="button" data-view-tab="word"><span class="tab-icon" aria-hidden="true">🤝</span><span class="tab-label">Слово</span></button>
+        <button type="button" data-view-tab="capital"><span class="tab-icon" aria-hidden="true">💰</span><span class="tab-label">Капитал</span></button>
+        <button type="button" data-view-tab="rest"><span class="tab-icon" aria-hidden="true">🎁</span><span class="tab-label">Отдых</span></button>
+        <button type="button" data-view-tab="settings"><span class="tab-icon" aria-hidden="true">⚙️</span><span class="tab-label">Настройка</span></button>
+      </nav>
+
+      <main class="dashboard">
+        <section class="stage-section" data-view-panel="overview" aria-labelledby="stageTitle">
+          <div class="stage-media" id="stageMedia" data-stage="0">
+            <img src="assets/character-stage-01.png" alt="Реалистичный персонаж проекта Актив Я в премиальном рабочем пространстве" />
+            <div class="stage-aura" aria-hidden="true"></div>
+            <div class="stage-overlay">
+              <div class="stage-top">
+                <span id="rankLabel">Основатель</span>
+                <span id="seasonLabel">Сезон 01</span>
+              </div>
+              <div class="stage-bottom">
+                <p id="stageTitle">Этап фундамента</p>
+                <h2 id="stageHeadline">Твой актив начал расти</h2>
+                <div class="level-row">
+                  <span id="levelLabel">Уровень 1</span>
+                  <div class="level-track" aria-label="Прогресс уровня">
+                    <span id="levelProgress"></span>
+                  </div>
+                </div>
+                <div class="stage-ladder">
+                  <div class="stage-steps" id="stageSteps" aria-label="Этапы роста"></div>
+                  <span class="stage-next" id="stageNext"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="floor-banner" id="floorBanner" data-view-panel="overview" aria-live="polite">
+          <span class="floor-icon" id="floorIcon" aria-hidden="true">⚠️</span>
+          <div class="floor-main">
+            <strong id="floorTitle">Минимум дня</strong>
+            <p id="floorText"></p>
+          </div>
+        </section>
+
+        <section class="work-surface future-teaser" id="futureTeaser" data-view-panel="overview" hidden>
+          <span class="fs-avatar" aria-hidden="true">🧬</span>
+          <div class="future-teaser-main">
+            <div class="future-teaser-head">
+              <strong>Будущий Я</strong>
+              <span class="future-teaser-badge" id="futureTeaserBadge" hidden></span>
+            </div>
+            <p class="future-teaser-text" id="futureTeaserText"></p>
+            <button class="future-teaser-btn" id="futureTeaserBtn" type="button">Открыть переписку →</button>
+          </div>
+        </section>
+
+        <section class="metrics-grid" data-view-panel="overview" aria-label="Ключевые показатели">
+          <article class="metric primary-metric">
+            <span>Потенциал</span>
+            <strong id="potentialValue">$0</strong>
+            <small id="potentialDelta">0 монет накоплено</small>
+          </article>
+
+          <article class="metric">
+            <span>Реальный доход / мес</span>
+            <strong id="realIncomeValue">—</strong>
+            <small id="realIncomeNote">Запиши в «Капитал → Реальность»</small>
+            <button class="wallet-spend" id="updateRealButton" type="button">Обновить →</button>
+          </article>
+
+          <article class="metric">
+            <span>Сегодня</span>
+            <strong id="todayCoins">0 монет</strong>
+            <small id="todayPotential">$0 потенциала</small>
+          </article>
+
+          <article class="metric">
+            <span>Кошелек наград</span>
+            <strong id="walletCoins">0 монет</strong>
+            <small>Заработанные монеты можно потратить на заслуженный отдых</small>
+            <button class="wallet-spend" id="spendButton" type="button">Потратить на отдых →</button>
+          </article>
+
+          <article class="metric">
+            <span>Серия</span>
+            <strong id="streakDays">0 дней</strong>
+            <small id="streakMeta"></small>
+            <small id="dailyTargetProgress">0 / 20 монет до цели дня</small>
+            <div class="target-track" aria-label="Прогресс дневной цели">
+              <span id="dailyTargetBar"></span>
+            </div>
+          </article>
+        </section>
+
+        <section class="work-surface north-star" id="northStar" data-view-panel="overview" aria-labelledby="northStarHeading" hidden>
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Полярная звезда</p>
+              <h2 id="northStarHeading">Большая цель</h2>
+            </div>
+            <button class="secondary-button" id="editGoalButton" type="button">Изменить</button>
+          </div>
+          <p class="north-star-goal" id="northStarGoal"></p>
+          <div class="north-star-progress" id="northStarProgress" hidden>
+            <div class="north-star-row">
+              <span id="northStarLabel">Прогресс к цели</span>
+              <strong id="northStarValue">$0 / $0</strong>
+            </div>
+            <div class="season-track" aria-label="Прогресс к большой цели">
+              <span id="northStarBar"></span>
+            </div>
+          </div>
+        </section>
+
+        <section class="work-surface coach-card" data-view-panel="overview" aria-labelledby="coachHeading">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Совет дня</p>
+              <h2 id="coachHeading">Куда направить силу</h2>
+            </div>
+            <strong class="coach-pill" id="coachMomentum">—</strong>
+          </div>
+          <article class="coach-hero" id="coachHero"></article>
+          <div class="coach-secondary" id="coachSecondary"></div>
+        </section>
+
+        <section class="word-intro" data-view-panel="word" hidden>
+          <p>Здесь живёт твоя подотчётность. Мотивация кончается — слово, свидетель и ставка держат, когда её уже нет.</p>
+        </section>
+
+        <section class="work-surface accountability-card" data-view-panel="word" hidden aria-labelledby="accountabilityHeading">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Репутация</p>
+              <h2 id="accountabilityHeading">Слово перед свидетелем</h2>
+            </div>
+            <strong class="reputation-pill" id="reputationLabel">0 / 7</strong>
+          </div>
+          <p class="accountability-copy" id="accountabilityCopy"></p>
+          <form class="accountability-form" id="accountabilityForm">
+            <label>
+              Свидетель
+              <input id="witnessInput" type="text" maxlength="50" placeholder="Наставник, будущий я, отец, совет директоров" />
+            </label>
+            <label>
+              Слово на сегодня
+              <input id="pledgeInput" type="text" maxlength="100" placeholder="Сегодня я сделаю один честный шаг..." />
+            </label>
+            <button type="submit">Дать слово</button>
+          </form>
+          <div class="pledge-actions" id="pledgeActions" hidden>
+            <button id="honorPledgeButton" type="button">Слово выполнено</button>
+            <button id="changePledgeButton" type="button">Изменить</button>
+          </div>
+        </section>
+
+        <section class="work-surface honor-report" data-view-panel="word" hidden aria-labelledby="honorHeading">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Живой свидетель</p>
+              <h2 id="honorHeading">Отчёт чести</h2>
+            </div>
+          </div>
+          <p class="honor-copy">Раз в неделю отправь честный отчёт тому, перед кем держишь слово. Когда живой человек видит твой результат — пропускать становится по-настоящему дорого.</p>
+          <label class="honor-phone">
+            Телефон свидетеля для WhatsApp (необязательно)
+            <input id="witnessPhoneInput" type="tel" inputmode="tel" maxlength="20" placeholder="+7 999 123-45-67" />
+          </label>
+          <pre class="honor-preview" id="honorPreview"></pre>
+          <div class="honor-actions">
+            <button id="shareWhatsappButton" type="button">WhatsApp</button>
+            <button id="shareTelegramButton" type="button">Telegram</button>
+            <button id="shareNativeButton" type="button" hidden>Поделиться</button>
+            <button id="copyReportButton" type="button" class="secondary-button">Скопировать</button>
+          </div>
+        </section>
+
+        <section class="work-surface stake-card" id="stakeCard" data-view-panel="word" hidden aria-labelledby="stakeHeading">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Ставка чести</p>
+              <h2 id="stakeHeading">Деньги на кону</h2>
+            </div>
+            <strong class="coach-pill" id="stakeStatusPill" hidden></strong>
+          </div>
+          <div id="stakeBody"></div>
+        </section>
+
+        <section class="work-surface" data-view-panel="habits" hidden aria-labelledby="habitsHeading">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Ежедневный вклад</p>
+              <h2 id="habitsHeading">Привычки на сегодня</h2>
+            </div>
+            <button class="secondary-button" id="libraryToggleButton" type="button">+ Добавить привычку</button>
+          </div>
+          <div class="segmented-control habit-filters" role="tablist" aria-label="Фильтр привычек">
+            <button class="active" type="button" data-filter="all">Все</button>
+            <button type="button" data-filter="foundation">Тело</button>
+            <button type="button" data-filter="capital">Капитал</button>
+            <button type="button" data-filter="personality">Разум</button>
+            <button type="button" data-filter="relationships">Отношения</button>
+            <button type="button" data-filter="horizons">Горизонты</button>
+          </div>
+          <p class="habits-hint">Нажми на привычку, чтобы выбрать объём на сегодня (полный или меньше) — монеты начислятся справедливо. В списке только то, что актуально сегодня; привычки с ритмом «раз в неделю/месяц/год» отдыхают и вернутся, когда подойдёт срок.</p>
+          <div class="habit-list" id="habitList"></div>
+        </section>
+
+        <section class="work-surface habit-library" id="habitLibraryPanel" data-view-panel="habits" hidden aria-labelledby="libraryHeading">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Библиотека</p>
+              <h2 id="libraryHeading">Готовые привычки</h2>
+            </div>
+            <button class="secondary-button" id="libraryCloseButton" type="button">Свернуть</button>
+          </div>
+          <input id="librarySearch" class="library-search" type="search" placeholder="Поиск привычки: чтение, сон, английский…" aria-label="Поиск по библиотеке" />
+          <div class="library-filters" aria-label="Фильтр библиотеки привычек">
+            <button class="active" type="button" data-library-filter="all">Все</button>
+            <button type="button" data-library-filter="foundation">Тело</button>
+            <button type="button" data-library-filter="capital">Капитал</button>
+            <button type="button" data-library-filter="personality">Разум</button>
+            <button type="button" data-library-filter="relationships">Отношения</button>
+            <button type="button" data-library-filter="horizons">Горизонты</button>
+          </div>
+          <div class="library-list" id="habitLibraryList"></div>
+        </section>
+
+        <section class="work-surface" data-view-panel="habits" hidden aria-labelledby="customHabitHeading">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Своя привычка</p>
+              <h2 id="customHabitHeading">Создать привычку</h2>
+            </div>
+          </div>
+          <form class="custom-habit-form" id="customHabitForm">
+            <label>
+              Название
+              <input id="customHabitTitle" type="text" maxlength="70" placeholder="Например: 20 минут английского" />
+            </label>
+            <label>
+              Сектор
+              <select id="customHabitSector">
+                <option value="foundation">Тело</option>
+                <option value="capital">Капитал</option>
+                <option value="personality">Разум</option>
+                <option value="relationships">Отношения</option>
+                <option value="horizons">Горизонты</option>
+              </select>
+            </label>
+            <label>
+              Как часто
+              <select id="customHabitCadence">
+                <option value="">Авто — определю по смыслу</option>
+                <option value="daily">Каждый день</option>
+                <option value="fewweek">Несколько раз в неделю</option>
+                <option value="weekly">Раз в неделю</option>
+                <option value="monthly">Раз в месяц</option>
+                <option value="yearly">Раз в год</option>
+              </select>
+            </label>
+            <label>
+              Время
+              <select id="customHabitTime">
+                <option value="1">5-10 минут</option>
+                <option value="2" selected>15-25 минут</option>
+                <option value="3">30-45 минут</option>
+                <option value="4">60+ минут</option>
+              </select>
+            </label>
+            <label>
+              Вклад в тебя
+              <select id="customHabitImpact">
+                <option value="0">Поддержка</option>
+                <option value="1" selected>Рост</option>
+                <option value="2">Сильный рост</option>
+                <option value="3">Деньги / здоровье / отношения напрямую</option>
+              </select>
+            </label>
+            <label>
+              Сопротивление
+              <select id="customHabitResistance">
+                <option value="0">Легко начать</option>
+                <option value="1" selected>Нужно усилие</option>
+                <option value="2">Обычно откладываю</option>
+              </select>
+            </label>
+            <div class="pricing-card">
+              <span>Рекомендованная цена</span>
+              <strong id="recommendedCoins">3 монеты</strong>
+              <p id="pricingReason">Базовая привычка роста: заметный вклад без перегруза.</p>
+            </div>
+            <button id="addHabitButton" type="submit">Добавить за 3 монеты</button>
+          </form>
+          <p class="insight">У любой привычки автоматически появятся уровни «полностью / наполовину / минимум» — в трудный день уменьшишь объём одним тапом.</p>
+        </section>
+
+        <section class="work-surface" data-view-panel="habits" hidden aria-labelledby="editorHabitsHeading">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Редактор</p>
+              <h2 id="editorHabitsHeading">Текущие привычки</h2>
+            </div>
+          </div>
+          <div class="habit-editor-list" id="habitEditorList"></div>
+        </section>
+
+        <section class="work-surface growth-curve" data-view-panel="growth" hidden aria-labelledby="growthHeading">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Кривая капитализации</p>
+              <h2 id="growthHeading">Рост потенциала за 30 дней</h2>
+            </div>
+            <strong class="coach-pill" id="growthTotal">$0</strong>
+          </div>
+          <div class="chart-wrap" id="growthChart"></div>
+          <p class="insight" id="growthInsight"></p>
+        </section>
+
+        <section class="two-column" data-view-panel="growth" hidden>
+          <article class="work-surface" aria-labelledby="momentumHeading">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow">Импульс</p>
+                <h2 id="momentumHeading">Эта неделя против прошлой</h2>
+              </div>
+            </div>
+            <div class="momentum-box" id="momentumBox"></div>
+          </article>
+
+          <article class="work-surface" aria-labelledby="radarHeading">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow">Баланс капитала</p>
+                <h2 id="radarHeading">Радар по 5 секторам</h2>
+              </div>
+            </div>
+            <div class="radar-wrap" id="sectorRadar"></div>
+          </article>
+        </section>
+
+        <section class="work-surface stats-history" data-view-panel="growth" hidden aria-labelledby="histHeading">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">История</p>
+              <h2 id="histHeading">Статистика привычек</h2>
+            </div>
+          </div>
+          <div class="segmented-control hist-period" role="tablist" aria-label="Период статистики">
+            <button class="active" type="button" data-hist-period="day">По дням</button>
+            <button type="button" data-hist-period="week">По неделям</button>
+            <button type="button" data-hist-period="month">По месяцам</button>
+          </div>
+          <p class="hist-tip">Нажми на период, чтобы посмотреть, какие привычки ты закрыл.</p>
+          <div class="hist-list" id="histList"></div>
+
+          <div class="section-heading hist-habit-heading">
+            <div>
+              <p class="eyebrow">По привычке</p>
+              <h2>История привычки</h2>
+            </div>
+          </div>
+          <select id="histHabitSelect" class="hist-habit-select" aria-label="Выбор привычки"></select>
+          <div class="hist-habit-detail" id="histHabitDetail"></div>
+        </section>
+
+        <section class="work-surface identity-card" data-view-panel="growth" hidden aria-labelledby="identityHeading">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Кем ты становишься</p>
+              <h2 id="identityHeading">Голоса за личность</h2>
+            </div>
+            <strong class="coach-pill" id="identityPct">0%</strong>
+          </div>
+          <div class="identity-votes" id="identityVotes"></div>
+        </section>
+
+        <section class="work-surface future-self" data-view-panel="growth" hidden aria-labelledby="futureHeading">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Будущий Я</p>
+              <h2 id="futureHeading">Переписка с собой будущим</h2>
+            </div>
+          </div>
+          <div class="fs-feed" id="futureFeed"></div>
+          <div class="fs-input-row">
+            <input id="fsInput" type="text" maxlength="300" placeholder="Напиши себе будущему…" autocomplete="off" />
+            <button id="fsSendBtn" type="button" aria-label="Отправить">→</button>
+          </div>
+          <p class="fs-input-hint" id="fsInputHint"></p>
+          <div class="section-heading fs-fork-heading">
+            <div>
+              <p class="eyebrow">Развилка · через 12 месяцев</p>
+              <h2>Две траектории</h2>
+            </div>
+          </div>
+          <p class="future-message" id="futureMessage"></p>
+          <div class="future-fork">
+            <article class="future-path continue">
+              <span>Если продолжишь</span>
+              <strong id="futureContinuePotential">$0</strong>
+              <p id="futureContinueDetail"></p>
+            </article>
+            <article class="future-path quit">
+              <span>Если бросишь сейчас</span>
+              <strong id="futureQuitPotential">$0</strong>
+              <p id="futureQuitDetail"></p>
+            </article>
+          </div>
+          <p class="future-gap" id="futureGap"></p>
+          <div class="future-letter">
+            <div class="future-letter-head">
+              <strong>Письмо себе через год</strong>
+              <button class="secondary-button" id="editLetterButton" type="button">Написать</button>
+            </div>
+            <div class="future-letter-body" id="futureLetterBody"></div>
+          </div>
+        </section>
+
+        <section class="two-column" data-view-panel="capital" hidden>
+          <article class="work-surface dividend-card" id="dividendCard" aria-labelledby="dividendHeading">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow">Капитал, который работает на тебя</p>
+                <h2 id="dividendHeading">Дивиденды дисциплины</h2>
+              </div>
+              <strong class="coach-pill" id="dividendBalance">$0.00</strong>
+            </div>
+            <p class="dividend-intro">Накопленный потенциал — это актив. Пока ты держишь ритм, он сам приносит небольшой доход: <strong>твоя дисциплина — это процентная ставка</strong>. Чем длиннее серия, тем выше процент. В дни без действий актив отдыхает и не растёт — без штрафов.</p>
+            <div class="dividend-stats">
+              <div><span>Ставка сегодня</span><strong id="dividendRate">0% / день</strong></div>
+              <div><span>Заработано всего</span><strong id="dividendLifetime">$0.00</strong></div>
+            </div>
+            <div class="dividend-history" id="dividendHistory"></div>
+          </article>
+          <article class="work-surface reality-card" id="realityCard" aria-labelledby="materializeHeading">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow">Реальность · раз в месяц</p>
+                <h2 id="materializeHeading">Виртуальное против реального</h2>
+              </div>
+            </div>
+            <div class="capitalization-stat" id="capitalizationStat" hidden></div>
+            <div class="reality-steps">
+              <div><strong>1</strong><span>Раз в месяц записывай свой <b>реальный доход</b> за месяц (накопления — по желанию).</span></div>
+              <div><strong>2</strong><span>Приложение строит график: сколько <b>виртуального капитала</b> ты создал привычками и какой вышел <b>реальный доход</b>.</span></div>
+              <div><strong>3</strong><span>Видишь, превращается ли дисциплина в деньги — и где пора материализовать потенциал.</span></div>
+            </div>
+            <form class="reality-form" id="realityForm">
+              <label>
+                Месяц
+                <select id="realMonthSelect"></select>
+              </label>
+              <label>
+                Реальный доход за месяц, $
+                <input id="realIncomeInput" type="number" min="0" step="50" inputmode="decimal" placeholder="3000" />
+              </label>
+              <label>
+                Накопления / активы, $ (необязательно)
+                <input id="realSavingsInput" type="number" min="0" step="100" inputmode="decimal" placeholder="например 12000" />
+              </label>
+              <label>
+                Заметка (необязательно)
+                <input id="realNoteInput" type="text" maxlength="80" placeholder="что повлияло в этом месяце" />
+              </label>
+              <button type="submit">Сохранить месяц</button>
+            </form>
+            <p class="insight" id="realityInsight"></p>
+            <div class="compare-chart" id="compareChart"></div>
+            <div class="real-log-list" id="realLogList"></div>
+          </article>
+
+          <article class="work-surface" aria-labelledby="realityHeading">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow">Связь с реальностью</p>
+                <h2 id="realityHeading">Как потенциал станет деньгами</h2>
+              </div>
+            </div>
+            <div class="reality-steps">
+              <div><strong>1</strong><span>Привычка создает навык, энергию или доверие.</span></div>
+              <div><strong>2</strong><span>Навык превращается в действие дохода: фокус, клиент, прайс, проект, актив.</span></div>
+              <div><strong>3</strong><span>Действие дохода попадает в реальные активы, которые ты фиксируешь выше.</span></div>
+            </div>
+            <p class="insight">Монеты не обещают деньги автоматически. Они показывают стоимость вклада. Деньги появляются, когда ты материализуешь этот вклад в рынке и активах.</p>
+            <details class="methodology">
+              <summary>Как считается 1 монета = $5</summary>
+              <p>Монета — это единица осмысленного вклада в себя. $5 за монету = консервативная рыночная оценка такого вклада: глубокая работа 45 минут стоит 5 монет ($25) — это примерно $33 в час, ниже ставки большинства специалистов. Лёгкая поддержка (вода, растяжка) стоит 1 монету, потому что её ценность ниже, а сделать её просто. Цена привычки складывается из времени, влияния и сопротивления — чем дороже действие для тебя и важнее результат, тем больше монет.</p>
+            </details>
+          </article>
+
+
+          <article class="work-surface board-card" aria-labelledby="boardHeading">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow">Раз в неделю · ты — CEO компании «Ты»</p>
+                <h2 id="boardHeading">Совет директоров</h2>
+              </div>
+              <strong class="coach-pill" id="boardStatus"></strong>
+            </div>
+            <p class="board-copy" id="boardCopy"></p>
+            <div class="board-kpis" id="boardKpis"></div>
+            <p class="board-verdict" id="boardVerdict"></p>
+            <button type="button" class="board-meeting-btn" id="boardMeetingBtn">Провести совет недели</button>
+            <p class="board-bet-title">Твоя ставка на следующую неделю</p>
+            <div class="weekly-brief" id="weeklyBrief"></div>
+            <form class="weekly-plan-form" id="weeklyPlanForm">
+              <label>
+                Фокус недели
+                <input id="weeklyFocusInput" type="text" maxlength="90" placeholder="Например: довести продукт до первой версии" />
+              </label>
+              <label>
+                Действие дохода
+                <input id="weeklyIncomeInput" type="text" maxlength="90" placeholder="Например: написать 5 потенциальным клиентам" />
+              </label>
+              <label>
+                Главный риск
+                <input id="weeklyRiskInput" type="text" maxlength="90" placeholder="Например: сон, телефон или откладывание" />
+              </label>
+              <button type="submit">Сохранить фокус</button>
+            </form>
+            <div class="season-progress">
+              <div>
+                <span>Прогресс сезона</span>
+                <strong id="seasonProgressLabel">День 1 / 30</strong>
+              </div>
+              <div class="season-track" aria-label="Прогресс сезона">
+                <span id="seasonProgressBar"></span>
+              </div>
+            </div>
+          </article>
+        </section>
+
+        <section class="work-surface rewards-section" id="rewardsCard" data-view-panel="rest" hidden aria-labelledby="rewardsHeading">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Разрешённый отдых</p>
+              <h2 id="rewardsHeading">Магазин наград</h2>
+            </div>
+            <strong class="coach-pill" id="rewardBalance">0 монет</strong>
+          </div>
+          <details class="methodology" open>
+            <summary>Что такое награда и как ею пользоваться</summary>
+            <p><strong>Награда — это любое удовольствие или отдых, который ты «покупаешь» заработанными монетами.</strong> Сериал, игры, вкусная еда, поездка — всё это здесь, с ценой.</p>
+            <p><strong>Зачем:</strong> обычно мы отдыхаем «бесплатно» и не замечаем этого — залипли в телефон, заказали еду, посмотрели три серии. Здесь удовольствие становится осознанным: ты видишь его цену и берёшь его как заслуженную награду за вклад, а не как случайный слив.</p>
+            <p><strong>Как пользоваться:</strong> захотел расслабиться — найди награду, нажми «Взять» (спишутся монеты из кошелька) и отдыхай <strong>без чувства вины</strong>. Не хватает монет — это честный сигнал, что отдых пока «в долг».</p>
+            <p>Тратится только кошелёк наград. Твой <strong>Потенциал не уменьшается</strong> — он навсегда хранит всё, что ты создал.</p>
+          </details>
+          <input id="rewardSearch" class="library-search" type="search" placeholder="Поиск награды: игры, еда, кино, поездка…" aria-label="Поиск наград" />
+          <div class="reward-list" id="rewardList"></div>
+          <p class="insight" id="rewardInsight"></p>
+        </section>
+
+        <section class="two-column bottom-grid" data-view-panel="capital" hidden>
+          <article class="work-surface" aria-labelledby="capitalMapHeading">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow">Капитал навыков</p>
+                <h2 id="capitalMapHeading">Карта капитала</h2>
+              </div>
+            </div>
+            <div class="sector-list" id="sectorList"></div>
+          </article>
+
+          <article class="work-surface" aria-labelledby="historyHeading">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow">История действий</p>
+                <h2 id="historyHeading">Последние дни</h2>
+              </div>
+            </div>
+            <div class="history-list" id="historyList"></div>
+          </article>
+        </section>
+
+        <section class="work-surface compact-tools" data-view-panel="settings" hidden aria-labelledby="toolsHeading">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Система</p>
+              <h2 id="toolsHeading">Настройка продукта</h2>
+            </div>
+          </div>
+          <div class="account-card">
+            <p class="eyebrow">Облако · синхронизация</p>
+            <div class="account-box" id="accountBox"></div>
+          </div>
+          <div class="account-card reminder-card" id="reminderCard" hidden>
+            <p class="eyebrow">Напоминания</p>
+            <p class="reminder-intro" id="reminderIntro">Мягкий пинг в нужное время, чтобы не забыть про ритуал дня. Работает даже когда приложение закрыто — добавь его на экран «Домой» и разреши уведомления.</p>
+            <label class="reminder-toggle">
+              <input type="checkbox" id="reminderEnabled" />
+              <span>Включить напоминания</span>
+            </label>
+            <div class="reminder-times" id="reminderTimes" hidden>
+              <label>
+                Утро — «начни день»
+                <input type="time" id="reminderMorning" value="09:00" />
+              </label>
+              <label class="reminder-evening-row">
+                <span class="reminder-evening-label"><input type="checkbox" id="reminderEveningEnabled" /> Вечер — «закрой день»</span>
+                <input type="time" id="reminderEvening" value="21:00" />
+              </label>
+              <button type="button" id="reminderTestButton" class="secondary-button">Прислать тест сейчас</button>
+            </div>
+            <p class="reminder-status" id="reminderStatus"></p>
+          </div>
+          <details class="changelog">
+            <summary>Версии и обновления · <span id="changelogCurrent">v0</span></summary>
+            <div class="changelog-list" id="changelogList"></div>
+          </details>
+          <div class="tool-row">
+            <button id="reonboardButton" type="button">Перенастроить профиль</button>
+            <button id="exportButton" type="button">Экспорт бэкапа</button>
+            <button id="importButton" type="button">Импорт бэкапа</button>
+            <input id="importFileInput" type="file" accept=".json" hidden />
+            <button id="resetButton" type="button" class="danger-button">Сбросить данные</button>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div id="rewardLayer" class="reward-layer" aria-live="polite"></div>
+
+    <script src="app.js" type="module"></script>
+  </body>
+</html>
