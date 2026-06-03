@@ -306,6 +306,68 @@ h2 {
   line-height: 1.4;
 }
 
+/* Связь с будущим собой */
+.bond-card {
+  margin-bottom: 14px;
+  padding: 14px 16px;
+  border: 1px solid rgba(101, 184, 173, 0.32);
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(101, 184, 173, 0.08), rgba(101, 184, 173, 0.02));
+}
+
+.bond-card.bond-debt {
+  border-color: rgba(230, 138, 115, 0.4);
+  background: linear-gradient(180deg, rgba(230, 138, 115, 0.1), rgba(230, 138, 115, 0.02));
+}
+
+.bond-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 9px;
+}
+
+.bond-eyebrow {
+  color: var(--muted);
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.bond-tier {
+  color: #8fd3c9;
+  font-weight: 820;
+  font-size: 0.96rem;
+}
+
+.bond-debt .bond-tier {
+  color: #f0a78f;
+}
+
+.bond-track {
+  height: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(244, 239, 232, 0.12);
+  border: 1px solid rgba(101, 184, 173, 0.24);
+}
+
+.bond-track span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #65b8ad, #b08ad6);
+  transition: width 500ms ease;
+}
+
+.bond-state {
+  margin: 10px 0 0;
+  color: var(--soft);
+  line-height: 1.5;
+  font-size: 0.9rem;
+}
+
 /* Хроника становления */
 .chronicle-card {
   border-color: rgba(176, 138, 214, 0.32);
