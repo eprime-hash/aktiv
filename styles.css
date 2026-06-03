@@ -3605,6 +3605,16 @@ body.ritual-open {
   font-weight: 800;
 }
 
+.future-teaser-bond {
+  color: #8fd3c9;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.future-teaser-bond.teaser-bond-debt {
+  color: #f0a78f;
+}
+
 .future-teaser-text {
   margin: 0 0 12px;
   color: var(--text);

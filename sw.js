@@ -1,4 +1,4 @@
-const CACHE_NAME = "aktiv-ya-v55";
+const CACHE_NAME = "aktiv-ya-v56";
 const ASSETS = [
   "./",
   "./index.html",
