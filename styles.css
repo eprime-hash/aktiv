@@ -1192,6 +1192,13 @@ select:focus {
   line-height: 1.5;
 }
 
+/* Вердикт голосом Будущего Я */
+.board-verdict-ai {
+  border-left-color: #b08ad6;
+  background: rgba(176, 138, 214, 0.1);
+  font-style: italic;
+}
+
 .board-meeting-btn {
   width: 100%;
   margin-bottom: 16px;
