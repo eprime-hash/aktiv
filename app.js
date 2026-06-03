@@ -14,8 +14,9 @@ const DIVIDEND_BASE_RATE = 0.0005; // 0.05%/день за любой актив�
 const DIVIDEND_MAX_LOOKBACK = 60; // не начисляем больше чем за 60 дней разом
 
 // Версия приложения. При выпуске обновляй и здесь, и CACHE_NAME в sw.js.
-const APP_VERSION = "v50";
+const APP_VERSION = "v51";
 const CHANGELOG = [
+  { v: "v51", note: "Защита данных: синхронизация теперь ОБЪЕДИНЯЕТ данные (а не «последний победил»), поэтому переход между устройствами и адресами больше не теряет историю. Онбординг запускается только после загрузки облака. Добавлена локальная страховочная копия и кнопка «Восстановить из копии» в Настройках." },
   { v: "v50", note: "Будущий Я ожил (ИИ-диалог в «Рост → Будущий Я») и теперь озвучивает вердикт на «Совете директоров» собственным голосом — генерируется при нажатии «Провести совет» (раз в неделю). Без входа в облако остаётся обычный честный вердикт. Также приложение переехало на новый адрес-хостинг." },
   { v: "v49", note: "Капитализация %: видно, какая доля созданного вклада превращается в реальные деньги (>100% = рычаг работает). Когда реальный доход растёт — приложение это празднует. Коуч мягко напоминает сделать денежное действие, если потенциал обгоняет доход." },
   { v: "v48", note: "Совет директоров: раз в неделю — честная сводка KPI компании «Ты» (создано, активные дни, серия, дивиденды, драйвер) с дельтами к прошлой неделе, вердикт и одна ставка на неделю. Кнопка «провести совет» отмечает ритуал с празднованием. В «Капитале»." },
@@ -549,7 +550,8 @@ document.addEventListener("DOMContentLoaded", () => {
   bindEvents();
   renderVersion();
   render();
-  maybeStartOnboarding();
+  // ВАЖНО: онбординг больше НЕ запускаем здесь — сначала пытаемся подтянуть
+  // облако (см. initSync/pullAndMerge), иначе свежий старт мог затереть данные.
   registerServiceWorker();
   requestPersistentStorage();
   initSync();
@@ -586,12 +588,14 @@ async function initSync() {
   try {
     config = await import("./config.js");
   } catch {
+    maybeStartOnboarding();
     return;
   }
   vapidPublicKey = config.VAPID_PUBLIC_KEY || "";
   if (!config.SUPABASE_URL || !config.SUPABASE_ANON_KEY) {
     renderAccount();
-    return; // облако не настроено — локальный режим, как раньше
+    maybeStartOnboarding(); // локальный режим — облака нет, онбордим сразу
+    return;
   }
   try {
     const { createClient } = await import("https://esm.sh/@supabase/supabase-js@2");
@@ -599,7 +603,8 @@ async function initSync() {
       auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true },
     });
   } catch {
-    return; // офлайн / CDN недоступен — работаем локально
+    maybeStartOnboarding(); // CDN недоступен — работаем локально, онбордим
+    return;
   }
   cloudReady = true;
 
@@ -637,19 +642,15 @@ async function pullAndMerge() {
     if (error) throw error;
 
     if (data?.data) {
-      const cloudState = data.data;
-      const cloudTime = cloudState.updatedAt || data.updated_at || "";
-      const localTime = state.updatedAt || "";
-      if (!hasLocalProgress() || cloudTime >= localTime) {
-        pullingFromCloud = true;
-        state = normalizeState(cloudState);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-        pullingFromCloud = false;
-        render();
-        setSyncStatus("Данные загружены из облака ✓");
-      } else {
-        await pushNow();
-      }
+      // ВСЕГДА сливаем облако и локальные данные (union), а не выбираем одну
+      // сторону. Так переход между устройствами/адресами не теряет историю.
+      pullingFromCloud = true;
+      state = mergeStates(state, normalizeState(structuredClone(data.data)));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      pullingFromCloud = false;
+      render();
+      setSyncStatus("Данные синхронизированы ✓");
+      await pushNow(); // заливаем объединённое обратно, чтобы облако тоже было полным
     } else {
       await pushNow(); // в облаке пусто — заливаем локальные данные
     }
@@ -657,6 +658,7 @@ async function pullAndMerge() {
     setSyncStatus("Облако недоступно, работаю локально");
   } finally {
     pullInFlight = false;
+    maybeStartOnboarding(); // онбординг — только после попытки загрузки облака
   }
 }
 
@@ -752,6 +754,7 @@ function renderAuthOverlay() {
   overlay.querySelector('[data-auth="skip"]').addEventListener("click", () => {
     sessionStorage.setItem("aktiv-auth-dismissed", "1");
     closeAuthOverlay();
+    maybeStartOnboarding(); // решил пользоваться локально — теперь онбординг
   });
   overlay.querySelector('[data-auth="toggle"]').addEventListener("click", () => {
     authMode = isLogin ? "register" : "login";
@@ -1192,6 +1195,7 @@ function cacheElements() {
     "exportButton",
     "importButton",
     "importFileInput",
+    "restoreBackupButton",
     "resetButton",
   ].forEach((id) => {
     els[id] = document.getElementById(id);
@@ -1424,6 +1428,8 @@ function bindEvents() {
     };
     reader.readAsText(file);
   });
+
+  els.restoreBackupButton?.addEventListener("click", restoreFromLocalBackup);
 
   els.resetButton.addEventListener("click", () => {
     const confirmed = window.confirm("Сбросить локальный прогресс Актив Я на этом устройстве?");
@@ -4250,9 +4256,179 @@ function syncCompletionPrices() {
   normalizeState(state);
 }
 
+// --- Безопасное слияние состояний (никогда не теряем данные) -------------
+
+const BACKUP_KEY = `${STORAGE_KEY}-backup`;
+
+// "Богатство" состояния = сколько всего отметок привычек в нём. Используем,
+// чтобы не дать бедному состоянию затереть богатую страховочную копию.
+function stateRichness(s) {
+  let n = 0;
+  for (const day in s?.completions || {}) n += Object.keys(s.completions[day]).length;
+  return n;
+}
+
+function unionById(arrA, arrB) {
+  const map = new Map();
+  for (const x of arrA || []) if (x && x.id != null) map.set(x.id, x);
+  for (const x of arrB || []) if (x && x.id != null && !map.has(x.id)) map.set(x.id, x);
+  return [...map.values()];
+}
+function unionArr(a, b) {
+  return [...new Set([...(a || []), ...(b || [])])];
+}
+function maxNum(a, b) {
+  return Math.max(Number(a) || 0, Number(b) || 0);
+}
+function maxStr(a, b) {
+  return (a || "") >= (b || "") ? a || "" : b || "";
+}
+function preferStr(a, b) {
+  return String(b || "").length > String(a || "").length ? b : a || b || "";
+}
+
+// Объединяет два состояния БЕЗ потерь: история, привычки, награды и т.д. — это
+// объединение (union). При конфликте берём более полный/поздний вариант.
+function mergeStates(a, b) {
+  a = a || {};
+  b = b || {};
+  const out = structuredClone(a);
+
+  out.completions = structuredClone(a.completions || {});
+  for (const day in b.completions || {}) {
+    out.completions[day] = out.completions[day] || {};
+    for (const hid in b.completions[day]) {
+      const ex = out.completions[day][hid];
+      const inc = b.completions[day][hid];
+      if (!ex || Number(inc.coins || 0) > Number(ex.coins || 0)) out.completions[day][hid] = inc;
+    }
+  }
+
+  out.customHabits = unionById(a.customHabits, b.customHabits);
+  out.rewardPurchases = unionById(a.rewardPurchases, b.rewardPurchases);
+  out.materializations = unionById(a.materializations, b.materializations);
+  out.disabledDefaultHabitIds = unionArr(a.disabledDefaultHabitIds, b.disabledDefaultHabitIds);
+  out.habitOverrides = { ...(a.habitOverrides || {}), ...(b.habitOverrides || {}) };
+
+  const realMap = new Map();
+  for (const e of [...(a.realLog || []), ...(b.realLog || [])]) {
+    const ex = realMap.get(e.monthKey);
+    if (!ex || String(e.createdAt || "") > String(ex.createdAt || "")) realMap.set(e.monthKey, e);
+  }
+  out.realLog = [...realMap.values()].sort((x, y) => x.monthKey.localeCompare(y.monthKey));
+
+  out.streak = {
+    best: maxNum(a.streak?.best, b.streak?.best),
+    shields: maxNum(a.streak?.shields, b.streak?.shields),
+    protectedDates: unionArr(a.streak?.protectedDates, b.streak?.protectedDates),
+    rewardedMilestones: unionArr(a.streak?.rewardedMilestones, b.streak?.rewardedMilestones),
+  };
+
+  const da = a.dividends || {};
+  const db = b.dividends || {};
+  const divHist = new Map();
+  for (const h of [...(da.history || []), ...(db.history || [])]) {
+    const ex = divHist.get(h.date);
+    if (!ex || Number(h.amount || 0) > Number(ex.amount || 0)) divHist.set(h.date, h);
+  }
+  out.dividends = {
+    balance: maxNum(da.balance, db.balance),
+    lifetimeEarned: maxNum(da.lifetimeEarned, db.lifetimeEarned),
+    lastAccrual: maxStr(da.lastAccrual, db.lastAccrual),
+    lastShownBalance: maxNum(da.lastShownBalance, db.lastShownBalance),
+    history: [...divHist.values()].sort((x, y) => String(y.date).localeCompare(String(x.date))).slice(0, 30),
+  };
+
+  const pa = a.profile || {};
+  const pb = b.profile || {};
+  out.profile = {
+    onboardedAt: [pa.onboardedAt, pb.onboardedAt].filter(Boolean).sort()[0] || null,
+    archetype: pa.archetype || pb.archetype || "",
+    name: pa.name || pb.name || "",
+    bigGoal: preferStr(pa.bigGoal, pb.bigGoal),
+    goalTargetAssets: maxNum(pa.goalTargetAssets, pb.goalTargetAssets),
+    futureLetter: preferStr(pa.futureLetter, pb.futureLetter),
+  };
+
+  const wa = a.weeklyPlan || {};
+  const wb = b.weeklyPlan || {};
+  out.weeklyPlan = String(wb.weekKey || "") > String(wa.weekKey || "") ? { ...wa, ...wb } : { ...wb, ...wa };
+  out.weeklyPlan.weekKey = maxStr(wa.weekKey, wb.weekKey) || out.weeklyPlan.weekKey;
+
+  const aa = a.accountability || {};
+  const ab = b.accountability || {};
+  const pledges = { ...(aa.pledges || {}) };
+  for (const d in ab.pledges || {}) {
+    if (!pledges[d] || (ab.pledges[d].honoredAt && !pledges[d].honoredAt)) pledges[d] = ab.pledges[d];
+  }
+  out.accountability = {
+    defaultWitness: aa.defaultWitness || ab.defaultWitness || "",
+    witnessPhone: aa.witnessPhone || ab.witnessPhone || "",
+    pledges,
+  };
+
+  const boardA = a.board || {};
+  const boardB = b.board || {};
+  out.board = String(boardB.verdictWeek || "") > String(boardA.verdictWeek || "") ? { ...boardA, ...boardB } : { ...boardB, ...boardA };
+  out.board.lastMeeting = maxStr(boardA.lastMeeting, boardB.lastMeeting);
+
+  out.futureSelf = {
+    messages: unionById(a.futureSelf?.messages, b.futureSelf?.messages)
+      .sort((x, y) => String(y.date).localeCompare(String(x.date)))
+      .slice(0, 80),
+    firedKeys: unionArr(a.futureSelf?.firedKeys, b.futureSelf?.firedKeys),
+    lastDaily: maxStr(a.futureSelf?.lastDaily, b.futureSelf?.lastDaily),
+    lastLevel: maxNum(a.futureSelf?.lastLevel, b.futureSelf?.lastLevel),
+    lastSeen: maxStr(a.futureSelf?.lastSeen, b.futureSelf?.lastSeen),
+  };
+
+  const ra = a.reminders || {};
+  const rb = b.reminders || {};
+  out.reminders = rb.enabled ? { ...ra, ...rb } : { ...rb, ...ra };
+
+  const sa = a.progress?.lastStage;
+  const sb = b.progress?.lastStage;
+  out.progress = { lastStage: sa == null && sb == null ? null : Math.max(Number(sa) || 0, Number(sb) || 0) };
+
+  out.stake = String(b.stake?.weekKey || "") >= String(a.stake?.weekKey || "") ? b.stake || a.stake : a.stake || b.stake;
+  out.seasonStart = [a.seasonStart, b.seasonStart].filter(Boolean).sort()[0] || a.seasonStart || b.seasonStart;
+  out.updatedAt = new Date().toISOString();
+  return normalizeState(out);
+}
+
+function restoreFromLocalBackup() {
+  let backup;
+  try {
+    backup = JSON.parse(localStorage.getItem(BACKUP_KEY) || "null");
+  } catch {
+    backup = null;
+  }
+  if (!backup?.data) {
+    window.alert("Локальная резервная копия не найдена на этом устройстве.");
+    return;
+  }
+  const when = backup.savedAt ? new Date(backup.savedAt).toLocaleString("ru-RU") : "?";
+  if (!window.confirm(`Восстановить из локальной копии (${when})? Данные будут объединены с текущими — ничего не пропадёт.`)) return;
+  state = mergeStates(state, normalizeState(structuredClone(backup.data)));
+  saveState();
+  render();
+  window.alert("Готово. Данные восстановлены и объединены.");
+}
+
 function saveState() {
   state.updatedAt = new Date().toISOString();
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  // Страховочная копия: обновляем только если текущее не беднее сохранённого,
+  // чтобы случайное обнуление не затёрло хорошую копию.
+  try {
+    const rich = stateRichness(state);
+    const prev = JSON.parse(localStorage.getItem(BACKUP_KEY) || "null");
+    if (!prev || rich >= (prev.richness || 0)) {
+      localStorage.setItem(BACKUP_KEY, JSON.stringify({ richness: rich, savedAt: new Date().toISOString(), data: state }));
+    }
+  } catch {
+    // не критично
+  }
   scheduleCloudPush();
 }
 
