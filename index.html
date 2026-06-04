@@ -36,6 +36,7 @@
       <nav class="view-tabs" aria-label="Разделы продукта">
         <button class="active" type="button" data-view-tab="overview"><span class="tab-icon" aria-hidden="true">🏠</span><span class="tab-label">Обзор</span></button>
         <button type="button" data-view-tab="habits"><span class="tab-icon" aria-hidden="true">✅</span><span class="tab-label">Привычки</span></button>
+        <button type="button" data-view-tab="goals"><span class="tab-icon" aria-hidden="true">🎯</span><span class="tab-label">Цели</span></button>
         <button type="button" data-view-tab="growth"><span class="tab-icon" aria-hidden="true">📈</span><span class="tab-label">Рост</span></button>
         <button type="button" data-view-tab="word"><span class="tab-icon" aria-hidden="true">🤝</span><span class="tab-label">Слово</span></button>
         <button type="button" data-view-tab="capital"><span class="tab-icon" aria-hidden="true">💰</span><span class="tab-label">Капитал</span></button>
@@ -341,6 +342,37 @@
             </div>
           </div>
           <div class="habit-editor-list" id="habitEditorList"></div>
+        </section>
+
+        <section class="work-surface goals-create" data-view-panel="goals" hidden aria-labelledby="goalsHeading">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">ИИ-архитектор · цель → система</p>
+              <h2 id="goalsHeading">Новая цель</h2>
+            </div>
+          </div>
+          <p class="goals-intro">Опиши, чего хочешь достичь — и ИИ соберёт под это конкретную систему привычек с правильным ритмом. Можно вести несколько целей одновременно.</p>
+          <label class="goal-field">
+            Цель
+            <textarea id="goalInput" maxlength="300" rows="2" placeholder="Например: запустить SaaS-продукт и выйти на $5000 в месяц за 6 месяцев"></textarea>
+          </label>
+          <label class="goal-field">
+            Вводные (необязательно)
+            <input id="goalContextInput" type="text" maxlength="200" placeholder="например: 2 часа в день, силён в коде, слаб в продажах" />
+          </label>
+          <button id="goalPlanButton" type="button">Собрать систему ✨</button>
+          <p class="goal-status" id="goalStatus"></p>
+          <div id="goalPreview"></div>
+        </section>
+
+        <section class="work-surface" data-view-panel="goals" hidden aria-labelledby="goalsListHeading">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Твои цели</p>
+              <h2 id="goalsListHeading">Цели и трекшен</h2>
+            </div>
+          </div>
+          <div id="goalsList"></div>
         </section>
 
         <section class="work-surface chronicle-card" data-view-panel="growth" hidden aria-labelledby="chronicleHeading">

@@ -306,6 +306,128 @@ h2 {
   line-height: 1.4;
 }
 
+/* Цели — ИИ-архитектор + трекшен */
+.goals-intro {
+  margin: 4px 0 14px;
+  color: var(--soft);
+  line-height: 1.55;
+}
+
+.goal-field {
+  display: block;
+  margin-bottom: 12px;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.goal-field textarea,
+.goal-field input {
+  display: block;
+  width: 100%;
+  margin-top: 6px;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background: var(--surface-2);
+  color: var(--text);
+  padding: 10px 12px;
+  font: inherit;
+  resize: vertical;
+}
+
+#goalPlanButton {
+  border: 1px solid rgba(217, 182, 111, 0.5);
+  border-radius: 8px;
+  background: linear-gradient(180deg, rgba(217, 182, 111, 0.2), rgba(217, 182, 111, 0.06));
+  color: var(--gold-2);
+  font: inherit;
+  font-weight: 800;
+  padding: 11px 16px;
+  cursor: pointer;
+}
+
+#goalPlanButton:disabled { opacity: 0.6; cursor: default; }
+
+.goal-status {
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
+.goal-plan {
+  margin-top: 14px;
+  border: 1px solid rgba(217, 182, 111, 0.3);
+  border-radius: 10px;
+  background: rgba(217, 182, 111, 0.05);
+  padding: 14px 16px;
+}
+
+.goal-plan h3 { margin: 0 0 6px; color: var(--text); }
+.goal-plan-summary { margin: 0 0 10px; color: var(--soft); line-height: 1.5; }
+.goal-plan-line { margin: 4px 0; color: var(--soft); font-size: 0.9rem; }
+.goal-plan-hint { margin: 12px 0 8px; color: var(--gold-2); font-weight: 700; font-size: 0.88rem; }
+
+.goal-plan-habits { display: grid; gap: 8px; }
+
+.goal-habit {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(14, 14, 15, 0.4);
+  padding: 10px 12px;
+  cursor: pointer;
+}
+
+.goal-habit.on { border-color: rgba(101, 200, 137, 0.5); background: rgba(101, 200, 137, 0.07); }
+.goal-habit input { margin-top: 3px; width: 18px; height: 18px; accent-color: var(--green); }
+.goal-habit-main { display: flex; flex-direction: column; gap: 3px; }
+.goal-habit-main strong { color: var(--text); }
+.goal-habit-main span { color: var(--muted); font-size: 0.8rem; }
+.goal-habit-why { color: var(--soft) !important; font-size: 0.82rem !important; }
+
+.goal-plan-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+#goalCreateBtn {
+  border: 0; border-radius: 8px; background: var(--green); color: #07100a;
+  font: inherit; font-weight: 800; padding: 11px 16px; cursor: pointer;
+}
+
+.goal-card {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: rgba(14, 14, 15, 0.45);
+  padding: 14px 16px;
+  margin-bottom: 12px;
+}
+
+.goal-card-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+.goal-card-head h3 { margin: 0; color: var(--text); font-size: 1.1rem; }
+.goal-del { border: 0; background: none; color: var(--muted); font-size: 1rem; cursor: pointer; }
+.goal-card-summary { margin: 6px 0 12px; color: var(--soft); line-height: 1.5; font-size: 0.9rem; }
+
+.goal-traction { display: flex; align-items: center; gap: 16px; margin: 8px 0 12px; flex-wrap: wrap; }
+.goal-ring {
+  --pct: 0;
+  width: 76px; height: 76px; border-radius: 50%; flex: 0 0 auto;
+  display: grid; place-items: center;
+  background: conic-gradient(var(--green) calc(var(--pct) * 1%), rgba(244,239,232,0.12) 0);
+}
+.goal-ring span {
+  width: 58px; height: 58px; border-radius: 50%; display: grid; place-items: center;
+  background: #121110; color: var(--text); font-weight: 820; font-size: 1.05rem;
+}
+.goal-stats { display: grid; gap: 6px; flex: 1 1 200px; }
+.goal-stats > div { display: flex; justify-content: space-between; gap: 10px; }
+.goal-stats span { color: var(--muted); font-size: 0.82rem; }
+.goal-stats strong { color: var(--text); font-weight: 740; }
+
+.goal-card-line { margin: 4px 0 10px; color: var(--soft); font-size: 0.88rem; }
+.goal-habit-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.goal-chip-mini {
+  border: 1px solid var(--line); border-radius: 999px; padding: 4px 9px;
+  background: rgba(14,14,15,0.5); color: var(--soft); font-size: 0.78rem;
+}
+
 /* Связь с будущим собой */
 .bond-card {
   margin-bottom: 14px;
